@@ -4,13 +4,17 @@ import userRouter from './routes/usersRoute.js'
 import mongoose from 'mongoose'
 import galleryItemRouter from './routes/galleryitemRoute.js'
 import jwt from 'jsonwebtoken'
+import dotenv from "dotenv"
 
+dotenv.config()//find env file and connect
 
 const app = express()
+
 app.use(bodyParser.json())
 
 
-const connectionString ="mongodb+srv://tester2:321@cluster0.mxx4eom.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const connectionString = process.env.MONGO_URL;
+
 
 //this token decode and midleware seen ekk
 
@@ -19,7 +23,7 @@ app.use((req,res,next)=>{
     const token = req.header("Autherization")?.replace("Bearer","")
 
 if (token !=null){
-    jwt.verify(token,"secret",(err,decoded)=>{
+    jwt.verify(token, process.env.JWT_KEY,(err,decoded)=>{
         if(decoded != null){
             req.user = decoded
             next()
