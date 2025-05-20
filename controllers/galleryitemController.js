@@ -1,45 +1,37 @@
 import GalleryItem from "../models/galleryitem.js"
 
-export function createGallertItems(req, res){
 
-    const user =req.body.user
-    if (user == null){
-        res.status(403).json({
-            message:"please login to create a gallery items"
-        })
-        return
+export function createGalleryItems(req, res) {
+    if (req.user == null) {
+        res.status(401).json({
+            message: "Unauthorized"
+        });
+        return;
     }
-    if (user.type !="admin"){
+
+    if (req.user.type !== "admin") {
         res.status(403).json({
-            message:"you are not autherized to create a gallery Item"
-        })
-        return
+            message: "Forbidden"
+        });
+        return;
     }
-    // }if(user?.type != "admin"){
-    //     res.status(403).json({
-    //         message:"you do not have permission to create a gallery item"
-    //     })
-    //     return
-    // }
 
-    const galleryItem = req.body.item
+    const newGalleryItem = new GalleryItem(req.body);
 
-    const newGalleryItem = new GalleryItem(galleryItem)
-
-    newGalleryItem.save().then(
-        ()=>{
+    newGalleryItem.save()
+        .then(result => {
             res.json({
-                message:"Gallery item create successfully"
-            })
-           }
-    ).catch(
-        (err)=>{
-            console.log(err)
+                message: "Gallery item created successfully",
+                result: result
+            });
+        })
+        .catch(err => {
+            console.error(err);
             res.status(500).json({
-                message:"gallery item creation failed"
-            })
-        }
-    )
+                message: "Gallery item creation failed",
+                error: err
+            });
+        });
 }
 
 export function getGalleryItem(req,res){

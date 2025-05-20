@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import galleryItemRouter from './routes/galleryitemRoute.js'
 import jwt from 'jsonwebtoken'
 import dotenv from "dotenv"
+import categoryRouter from './routes/categoryRoute.js'
 
 dotenv.config()//find env file and connect
 
@@ -15,22 +16,21 @@ app.use(bodyParser.json())
 
 const connectionString = process.env.MONGO_URL;
 
-
 //this token decode and midleware seen ekk
 
 app.use((req,res,next)=>{
 
-    const token = req.header("Autherization")?.replace("Bearer","")
+    const token = req.header("Authorization")?.replace("Bearer ", "");
 
-if (token !=null){
+if (token){
     jwt.verify(token, process.env.JWT_KEY,(err,decoded)=>{
-        if(decoded != null){
-            req.user = decoded
-            next()
-        }else{
-            next()
+        if(decoded){
+            req.user = decoded;
+            console.log(req.user)
         }
-    })
+            next()
+        
+    });
 }else {
     next()
 }
@@ -52,6 +52,10 @@ mongoose.connect(connectionString).then(
 
 app.use("/api/users",userRouter)
 app.use("/api/gallery",galleryItemRouter)
+app.use("/api/category",categoryRouter)
+
+
+
 app.get("/",
     (req,res)=>{
          
