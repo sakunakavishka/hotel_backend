@@ -68,3 +68,84 @@ export function deleteCategory(req,res){
             }
         )
     }
+    export function getCategory(req,res){
+        Category.find().then(
+            (result)=>{
+                res.json(
+                    {
+                        categories : result
+                    }
+                )
+            }
+        ).catch(
+            ()=>{
+                res.json(
+                    {
+                        message:"failed to get category"
+                    }
+                )
+            }
+        )
+    }
+    export function getCategoryByName(req,res){
+        const name = req.params.name;
+        Category.findOne({name:name}).then(
+            (result)=>{
+                if(result == null){
+                    res.json(
+                        {
+                            message:"Category not found"
+                        }
+                    )
+                }else{
+                    res.json(
+                        {
+                            category : result
+                        }
+                    )
+                }
+            }
+        ).catch(
+            ()=>{
+                res.json(
+                    {
+                        message : "Failed to get category"
+                    }
+                )
+            }
+        )
+    }
+    export function updateCategory(req,res){
+        if(!isAdminValid(req)){
+            res.status(403).json({
+                message:"unauthorized"
+            })
+            return
+        }
+
+        const name=req.params.name;
+
+        Category.updateOne({name : name},req.body).then(
+            ()=>{
+                res.json({
+                    message:"Category Update Successfully"
+                })
+            }
+        ).catch(
+        ()=>{
+            res.json({
+                message:"Failed To Update Category"
+                })
+            }
+        )
+    }
+
+    function isAdminValid(req){
+        if(req.user==null){
+            return false
+        }
+        if(req.user.type !="admin"){
+            return false
+        }
+        return true;
+    }

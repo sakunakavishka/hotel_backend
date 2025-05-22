@@ -26,7 +26,6 @@ if (token){
     jwt.verify(token, process.env.JWT_KEY,(err,decoded)=>{
         if(decoded){
             req.user = decoded;
-            console.log(req.user)
         }
             next()
         
